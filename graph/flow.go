@@ -1,5 +1,7 @@
 package graph
 
+import "sort"
+
 type flowEdge struct {
 	to   int
 	cap  int
@@ -28,7 +30,7 @@ func (g *flowGraph) maxFlow(s, t int) {
 		for i := range parentEdge {
 			parentEdge[i] = -1
 		}
-		parentEdge[s] = -2
+		parentEdge[s] = -2 
 		queue := []int{s}
 
 		for len(queue) > 0 && parentEdge[t] == -1 {
@@ -44,7 +46,7 @@ func (g *flowGraph) maxFlow(s, t int) {
 		}
 
 		if parentEdge[t] == -1 {
-			return
+			return 
 		}
 
 		bottleneck := int(^uint(0) >> 1)
@@ -88,7 +90,7 @@ func (g *flowGraph) decomposePaths(s, t int, roomOf map[int]string) [][]string {
 			used[cur] = used[cur][:len(used[cur])-1]
 			cur = g.edges[eIdx].to
 			if visited[cur] {
-				break
+				break 
 			}
 			nodePath = append(nodePath, cur)
 			visited[cur] = true
@@ -135,13 +137,19 @@ func VertexDisjointPaths(links map[string][]string, start, end string) [][]strin
 		ids[room] = [2]int{in, out}
 		return in, out
 	}
+
+	sortedRooms := make([]string, 0, len(rooms))
 	for room := range rooms {
+		sortedRooms = append(sortedRooms, room)
+	}
+	sort.Strings(sortedRooms)
+	for _, room := range sortedRooms {
 		nodeIDs(room)
 	}
 
 	g := newFlowGraph(next)
 
-	for room := range rooms {
+	for _, room := range sortedRooms {
 		if room == start || room == end {
 			continue
 		}
@@ -149,8 +157,16 @@ func VertexDisjointPaths(links map[string][]string, start, end string) [][]strin
 		g.addEdge(in, out, 1)
 	}
 
+	sortedLinkRooms := make([]string, 0, len(links))
+	for room := range links {
+		sortedLinkRooms = append(sortedLinkRooms, room)
+	}
+	sort.Strings(sortedLinkRooms)
+
 	seen := map[[2]string]bool{}
-	for a, neighbors := range links {
+	for _, a := range sortedLinkRooms {
+		neighbors := append([]string(nil), links[a]...)
+		sort.Strings(neighbors)
 		for _, b := range neighbors {
 			if seen[[2]string{a, b}] {
 				continue
