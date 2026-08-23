@@ -1,6 +1,5 @@
 package graph
 
-
 type flowEdge struct {
 	to   int
 	cap  int
@@ -65,15 +64,12 @@ func (g *flowGraph) maxFlow(s, t int) {
 	}
 }
 
-// decomposePaths walks the resulting flow from s to t, repeatedly
-// following any edge that carries flow, to recover the actual set of
-// vertex-disjoint paths (as node-id sequences) that the flow represents.
 func (g *flowGraph) decomposePaths(s, t int, roomOf map[int]string) [][]string {
 	used := make([][]int, len(g.adj))
 	for u := range g.adj {
 		for _, eIdx := range g.adj[u] {
 			e := g.edges[eIdx]
-			if e.orig > 0 && e.cap < e.orig { // this original edge carries flow
+			if e.orig > 0 && e.cap < e.orig {
 				used[u] = append(used[u], eIdx)
 			}
 		}
@@ -92,20 +88,20 @@ func (g *flowGraph) decomposePaths(s, t int, roomOf map[int]string) [][]string {
 			used[cur] = used[cur][:len(used[cur])-1]
 			cur = g.edges[eIdx].to
 			if visited[cur] {
-				break // defensive: guard against any accidental cycle
+				break
 			}
 			nodePath = append(nodePath, cur)
 			visited[cur] = true
 		}
 		if cur != t {
-			continue // malformed/partial walk; discard defensively
+			continue 
 		}
 
 		var roomPath []string
 		for _, nd := range nodePath {
 			name := roomOf[nd]
 			if len(roomPath) == 0 || roomPath[len(roomPath)-1] != name {
-				roomPath = append(roomPath, name) // collapse in/out pair of same room
+				roomPath = append(roomPath, name)
 			}
 		}
 		paths = append(paths, roomPath)
@@ -113,9 +109,6 @@ func (g *flowGraph) decomposePaths(s, t int, roomOf map[int]string) [][]string {
 	return paths
 }
 
-// VertexDisjointPaths returns the maximum possible set of start-to-end
-// paths that share no rooms other than start/end itself, computed via
-// max-flow on a node-split graph so no viable combination is missed.
 func VertexDisjointPaths(links map[string][]string, start, end string) [][]string {
 	rooms := map[string]bool{start: true, end: true}
 	for room, neighbors := range links {
@@ -125,9 +118,6 @@ func VertexDisjointPaths(links map[string][]string, start, end string) [][]strin
 		}
 	}
 
-	// Assign node ids: intermediate rooms get separate in/out ids so the
-	// in->out edge can carry the room's one-ant-at-a-time capacity; start
-	// and end get a single id each since they hold unlimited ants.
 	ids := map[string][2]int{}
 	next := 0
 	nodeIDs := func(room string) (int, int) {
