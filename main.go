@@ -7,26 +7,26 @@ import (
 	"strings"
 
 	"lem-in/parser"
-	"lem-in/solver"
 	"lem-in/simulator"
+	"lem-in/solver"
 )
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Println("ERROR: invalid data format")
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, "ERROR: invalid data format")
+		os.Exit(0)
 	}
 
 	colony, err := parser.ParseFile(os.Args[1])
 	if err != nil {
-		fmt.Println("ERROR: invalid data format")
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, "ERROR: invalid data format")
+		os.Exit(0)
 	}
 
 	assignment := solver.Solve(colony.Links, colony.Start, colony.End, colony.NumAnts)
 	if assignment == nil {
-		fmt.Println("ERROR: invalid data format")
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, "ERROR: invalid data format")
+		os.Exit(0)
 	}
 
 	printFileContent(colony)
