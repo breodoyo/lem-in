@@ -11,15 +11,39 @@ type Assignment struct {
 	AntToPath []int      
 }
 
-
 func Solve(links map[string][]string, start, end string, numAnts int) *Assignment {
-	paths := graph.VertexDisjointPaths(links, start, end)
-	if len(paths) == 0 {
+	maxPaths := len(graph.VertexDisjointPaths(links, start, end))
+	if maxPaths == 0 {
 		return nil
 	}
 
-	sort.Slice(paths, func(i, j int) bool { return len(paths[i]) < len(paths[j]) })
+	var candidates []*Assignment
+	var turnsFor []int
 
+	for k := 1; k <= maxPaths; k++ {
+		paths := graph.VertexDisjointPathsLimited(links, start, end, k)
+		sort.Slice(paths, func(i, j int) bool { return len(paths[i]) < len(paths[j]) })
+
+		a, turns := assign(paths, numAnts)
+		candidates = append(candidates, a)
+		turnsFor = append(turnsFor, turns)
+	}
+
+	bestTurns := turnsFor[0]
+	for _, t := range turnsFor {
+		if t < bestTurns {
+			bestTurns = t
+		}
+	}
+	for i, t := range turnsFor {
+		if t == bestTurns {
+			return candidates[i]
+		}
+	}
+	return candidates[len(candidates)-1]
+}
+
+func assign(paths [][]string, numAnts int) (*Assignment, int) {
 	counts := make([]int, len(paths))
 	antToPath := make([]int, numAnts)
 
@@ -28,6 +52,7 @@ func Solve(links map[string][]string, start, end string, numAnts int) *Assignmen
 		hops[p] = len(path) - 1
 	}
 
+	turns := 0
 	for ant := 0; ant < numAnts; ant++ {
 		best := 0
 		bestFinish := hops[0] + counts[0]
@@ -40,7 +65,10 @@ func Solve(links map[string][]string, start, end string, numAnts int) *Assignmen
 		}
 		counts[best]++
 		antToPath[ant] = best
+		if bestFinish > turns {
+			turns = bestFinish
+		}
 	}
 
-	return &Assignment{Paths: paths, AntToPath: antToPath}
+	return &Assignment{Paths: paths, AntToPath: antToPath}, turns
 }

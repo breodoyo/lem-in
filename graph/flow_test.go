@@ -55,7 +55,7 @@ func TestVertexDisjointPaths_BridgeMonopoly(t *testing.T) {
 		t.Fatalf("got %d paths, want 3 (the graph's true max-flow): %v", len(paths), paths)
 	}
 	for _, p := range paths {
-		if len(p) != 6 { // 5 hops: start + 4 intermediate + end
+		if len(p) != 6 {
 			t.Errorf("path %v has length %d, want 6", p, len(p))
 		}
 	}

@@ -13,19 +13,19 @@ import (
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Println("ERROR: invalid data format, usage: lem-in <filename>")
+		fmt.Println("ERROR: invalid data format")
 		os.Exit(1)
 	}
 
 	colony, err := parser.ParseFile(os.Args[1])
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ERROR: invalid data format")
 		os.Exit(1)
 	}
 
 	assignment := solver.Solve(colony.Links, colony.Start, colony.End, colony.NumAnts)
 	if assignment == nil {
-		fmt.Println("ERROR: invalid data format, no path between ##start and ##end")
+		fmt.Println("ERROR: invalid data format")
 		os.Exit(1)
 	}
 
@@ -52,7 +52,7 @@ func printFileContent(c *parser.Colony) {
 			}
 		}
 		if strings.HasPrefix(line, "#") && !strings.HasPrefix(line, "##") {
-			continue
+			continue 
 		}
 		fmt.Println(line)
 	}

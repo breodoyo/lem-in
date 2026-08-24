@@ -34,7 +34,7 @@ func TestSolve_SinglePath(t *testing.T) {
 	if len(a.AntToPath) != 4 {
 		t.Fatalf("len(AntToPath) = %d, want 4", len(a.AntToPath))
 	}
-	
+	// hops=2, 4 ants: finish times 2,3,4,5 -> 5 turns.
 	if got := turnsUsed(a); got != 5 {
 		t.Errorf("turnsUsed = %d, want 5", got)
 	}
@@ -76,6 +76,36 @@ func TestSolve_BridgeMonopolyGraph(t *testing.T) {
 	}
 	if got := turnsUsed(a); got != 8 {
 		t.Errorf("turnsUsed = %d, want 8 (3 disjoint 5-hop paths, 10 ants split 4/3/3)", got)
+	}
+}
+
+func TestSolve_AvoidsUnnecessaryDetourPaths(t *testing.T) {
+	links := link(
+		[2]string{"start", "short"}, [2]string{"short", "end"},
+
+		[2]string{"start", "mid"}, [2]string{"mid", "shortcut"},
+		[2]string{"shortcut", "end"},
+		[2]string{"mid", "detourA"}, [2]string{"detourA", "detourB"}, [2]string{"detourB", "end"},
+
+		[2]string{"start", "long1"}, [2]string{"long1", "long2"}, [2]string{"long2", "bridge"},
+		[2]string{"bridge", "shortcut"}, 
+	)
+
+	a := Solve(links, "start", "end", 3)
+	if a == nil {
+		t.Fatal("expected an assignment, got nil")
+	}
+
+	usesLong := false
+	for _, p := range a.Paths {
+		for _, room := range p {
+			if room == "long1" {
+				usesLong = true
+			}
+		}
+	}
+	if usesLong {
+		t.Errorf("solver used the long/bridge branch even though it wasn't needed to hit the turn floor: %v", a.Paths)
 	}
 }
 
