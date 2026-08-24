@@ -14,7 +14,7 @@ var ErrInvalidFormat = errors.New("ERROR: invalid data format")
 func ParseFile(path string) (*Colony, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("%w, could not read file", ErrInvalidFormat)
+		return nil, fmt.Errorf("%w, could not read file: %v", ErrInvalidFormat, err)
 	}
 	defer f.Close()
 
