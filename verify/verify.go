@@ -7,7 +7,7 @@ import (
 
 	"lem-in/parser"
 )
-
+//verifies the master colony map(c), the total number of ants(numAnts), and the step-by-step history of turns and returns error if anyone broke a rule, or nil if all movers were perfectly legal
 func Check(c *parser.Colony, numAnts int, turns []string) error {
 	pos := make([]string, numAnts+1)
 	for i := 1; i <= numAnts; i++ {

@@ -12,22 +12,23 @@ type flowGraph struct {
 	adj   [][]int
 	edges []flowEdge
 }
-
+//initializes a new grapgh allocating an ounter slice for n total vertices
 func newFlowGraph(n int) *flowGraph {
 	return &flowGraph{adj: make([][]int, n)}
 }
-
+//Add a directed edge from u to v
 func (g *flowGraph) addEdge(u, v, cap int) {
 	g.edges = append(g.edges, flowEdge{to: v, cap: cap, orig: cap})
 	g.edges = append(g.edges, flowEdge{to: u, cap: 0, orig: 0})
 	g.adj[u] = append(g.adj[u], len(g.edges)-2)
 	g.adj[v] = append(g.adj[v], len(g.edges)-1)
 }
-
+//Calculates max flow from source  s to sink t upto a specifie limit
 func (g *flowGraph) maxFlow(s, t int, limit int) {
 	pushed := 0
 	for limit < 0 || pushed < limit {
 		parentEdge := make([]int, len(g.adj))
+		//initializes all parent trackers to unvisited
 		for i := range parentEdge {
 			parentEdge[i] = -1
 		}
@@ -51,6 +52,7 @@ func (g *flowGraph) maxFlow(s, t int, limit int) {
 		}
 
 		bottleneck := int(^uint(0) >> 1)
+		//backctracks from sink to source to find the smallest edge capacity the smallest edge capacity along the discovered path
 		for v := t; v != s; {
 			eIdx := parentEdge[v]
 			if g.edges[eIdx].cap < bottleneck {
@@ -58,6 +60,7 @@ func (g *flowGraph) maxFlow(s, t int, limit int) {
 			}
 			v = g.edges[eIdx^1].to
 		}
+		//backtacks to update capacities
 		for v := t; v != s; {
 			eIdx := parentEdge[v]
 			g.edges[eIdx].cap -= bottleneck
@@ -67,7 +70,7 @@ func (g *flowGraph) maxFlow(s, t int, limit int) {
 		pushed += bottleneck
 	}
 }
-
+// Transverses the edges where flow was pushed to reconstruct individual paths
 func (g *flowGraph) decomposePaths(s, t int, roomOf map[int]string) [][]string {
 	used := make([][]int, len(g.adj))
 	for u := range g.adj {
@@ -113,10 +116,11 @@ func (g *flowGraph) decomposePaths(s, t int, roomOf map[int]string) [][]string {
 	return paths
 }
 
+//passes a default -1 limit to look for unlimited paths
 func VertexDisjointPaths(links map[string][]string, start, end string) [][]string {
 	return VertexDisjointPathsLimited(links, start, end, -1)
 }
-
+//converts the string graph into a specialized flow network graph
 func VertexDisjointPathsLimited(links map[string][]string, start, end string, limit int) [][]string {
 	rooms := map[string]bool{start: true, end: true}
 	for room, neighbors := range links {

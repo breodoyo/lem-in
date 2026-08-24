@@ -55,7 +55,7 @@ func (g *Graph) BFSShortestPath(start, end string) []string {
 
 	return nil
 }
-
+//build the final path  by reading memory backward from the finish line to the start
 func reconstructPath(prev map[string]string, start, end string) []string {
 	path := []string{end}
 	cur := end
@@ -65,7 +65,7 @@ func reconstructPath(prev map[string]string, start, end string) []string {
 	}
 	return path
 }
-
+//finds multiple paths from start to finish
 func (g *Graph) AllEdgeDisjointPaths(start, end string) [][]string {
 	working := g.clone()
 	var paths [][]string

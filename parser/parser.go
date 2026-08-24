@@ -10,7 +10,7 @@ import (
 )
 
 var ErrInvalidFormat = errors.New("ERROR: invalid data format")
-
+//takes a files destination and return a successfully fiiled colony structure or an error
 func ParseFile(path string) (*Colony, error) {
 	f, err := os.Open(path)
 	if err != nil {
