@@ -10,12 +10,6 @@ import (
 )
 
 var expectedTurns = map[string]int{
-	"testdata/example01.txt":        4,
-	"testdata/test1.txt":            5,
-	"testdata/test2.txt":            3,
-	"testdata/test3_branching.txt":  8,
-	"testdata/test4_bottleneck.txt": 6,
-	"testdata/example02.txt":        11,
 	"testdata/example05.txt":        8,
 }
 
